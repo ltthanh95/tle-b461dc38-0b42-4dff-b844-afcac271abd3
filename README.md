@@ -145,7 +145,8 @@ tle-b461dc38-0b42-4dff-b844-afcac271abd3/
 
 ### Entity Relationship Diagram
 
-<img width="1186" height="975" alt="image" src="https://github.com/user-attachments/assets/7801a9d5-3e4b-4602-bc2f-9e8351ff54c4" />
+<img width="1308" height="959" alt="image" src="https://github.com/user-attachments/assets/69c01dd0-171a-4a3e-95eb-f53d75a71a8a" />
+
 
 
 
@@ -187,7 +188,7 @@ tle-b461dc38-0b42-4dff-b844-afcac271abd3/
 
 ---
 
-## 🔐 Access Control Implementation
+## Access Control Implementation
 
 ### Role Hierarchy & Permissions
 ```typescript
