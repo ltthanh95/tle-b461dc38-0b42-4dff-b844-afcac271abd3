@@ -29,7 +29,7 @@ A full-stack task management application with role-based access control (RBAC), 
 
 ### 1. Clone & Install
 ```bash
-git clone <repository-url>
+git clone [<repository-url>](https://github.com/ltthanh95/tle-b461dc38-0b42-4dff-b844-afcac271abd3.git)
 cd tle-b461dc38-0b42-4dff-b844-afcac271abd3
 npm install
 # or
