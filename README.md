@@ -145,59 +145,8 @@ tle-b461dc38-0b42-4dff-b844-afcac271abd3/
 
 ### Entity Relationship Diagram
 ```
-┌─────────────────┐         ┌─────────────────┐
-│  Organizations  │         │     Roles       │
-├─────────────────┤         ├─────────────────┤
-│ id (PK)         │         │ id (PK)         │
-│ name            │         │ name            │
-│ parentId (FK)   │◄───┐    │ createdAt       │
-│ createdAt       │    │    └────────┬────────┘
-└────────┬────────┘    │             │
-         │             │             │ 1:N
-         │ 1:N         │             │
-         │             │    ┌────────▼────────┐
-┌────────▼────────┐    │    │  Permissions    │
-│     Users       │    │    ├─────────────────┤
-├─────────────────┤    │    │ id (PK)         │
-│ id (PK)         │    │    │ roleId (FK)     │
-│ email           │    │    │ resource        │
-│ password        │    │    │ action          │
-│ name            │    │    │ createdAt       │
-│ roleId (FK)     │─── ┘    └─────────────────┘
-│ organizationId  │
-│ createdAt       │
-└────────┬────────┘
-         │ 1:N
-         │
-┌────────▼────────┐
-│     Tasks       │
-├─────────────────┤
-│ id (PK)         │
-│ title           │
-│ description     │
-│ status          │
-│ category        │
-│ userId (FK)     │
-│ organizationId  │
-│ createdAt       │
-│ updatedAt       │
-└─────────────────┘
+<img width="1186" height="975" alt="image" src="https://github.com/user-attachments/assets/7801a9d5-3e4b-4602-bc2f-9e8351ff54c4" />
 
-┌─────────────────┐
-│   AuditLog      │
-├─────────────────┤
-│ id (PK)         │
-│ userId          │
-│ userEmail       │
-│ action          │
-│ resource        │
-│ resourceId      │
-│ method          │
-│ endpoint        │
-│ ipAddress       │
-│ metadata        │
-│ createdAt       │
-└─────────────────┘
 ```
 
 ### Schema Details
