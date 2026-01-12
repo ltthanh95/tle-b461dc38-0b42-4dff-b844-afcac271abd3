@@ -144,10 +144,10 @@ tle-b461dc38-0b42-4dff-b844-afcac271abd3/
 ## Data Model
 
 ### Entity Relationship Diagram
-```
+
 <img width="1186" height="975" alt="image" src="https://github.com/user-attachments/assets/7801a9d5-3e4b-4602-bc2f-9e8351ff54c4" />
 
-```
+
 
 ### Schema Details
 
