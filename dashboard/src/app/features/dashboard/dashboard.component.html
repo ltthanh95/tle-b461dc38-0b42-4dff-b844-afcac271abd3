@@ -1,0 +1,446 @@
+<div class="min-h-screen transition-colors duration-200" [class.dark]="darkMode">
+  <div class="min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors">
+    <header class="glass dark:bg-slate-800/80 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl font-bold text-slate-900 dark:text-white">task manager</h1>
+              <p class="text-xs text-slate-600 dark:text-slate-400">
+                {{ currentUser?.name }} • {{ currentUser?.role?.name }} • {{ currentUser?.organization?.name }}
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-2">
+            <!-- dark mode toggle -->
+            <button 
+              (click)="toggleDarkMode()"
+              class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              title="toggle dark mode"
+            >
+              <svg *ngIf="!darkMode" class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+              </svg>
+              <svg *ngIf="darkMode" class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+              </svg>
+            </button>
+            <button 
+              (click)="showChart = !showChart"
+              class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              [class.bg-blue-100]="showChart"
+              [class.dark:bg-blue-900]="showChart"
+              title="toggle stats (Ctrl+/)"
+            >
+              <svg class="w-5 h-5" [class.text-blue-600]="showChart" [class.text-slate-600]="!showChart" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </button>
+
+            <button 
+              (click)="logout()"
+              class="px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors">
+              logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div *ngIf="error" class="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 px-4 py-3 rounded-xl flex items-center gap-2">
+        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+        </svg>
+        {{ error }}
+      </div>
+      <div *ngIf="showChart" class="mb-6 card dark:bg-slate-800 dark:border-slate-700 p-6 animate-fadeIn">
+        <h2 class="text-lg font-bold text-slate-900 dark:text-white mb-4">task completion stats</h2>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div class="text-center p-4 bg-slate-50 dark:bg-slate-700 rounded-xl">
+            <div class="text-3xl font-bold text-slate-900 dark:text-white">{{ taskStats.total }}</div>
+            <div class="text-sm text-slate-600 dark:text-slate-400">total tasks</div>
+          </div>
+          <div class="text-center p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl">
+            <div class="text-3xl font-bold text-yellow-600 dark:text-yellow-400">{{ taskStats.pending }}</div>
+            <div class="text-sm text-yellow-600 dark:text-yellow-400">pending</div>
+          </div>
+          <div class="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl">
+            <div class="text-3xl font-bold text-blue-600 dark:text-blue-400">{{ taskStats.inProgress }}</div>
+            <div class="text-sm text-blue-600 dark:text-blue-400">in progress</div>
+          </div>
+          <div class="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+            <div class="text-3xl font-bold text-green-600 dark:text-green-400">{{ taskStats.completed }}</div>
+            <div class="text-sm text-green-600 dark:text-green-400">completed</div>
+          </div>
+        </div>
+
+        <!-- progress bars -->
+        <div class="space-y-3">
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-slate-600 dark:text-slate-400">pending</span>
+              <span class="text-slate-900 dark:text-white font-semibold">{{ taskStats.pendingPercent | number:'1.0-0' }}%</span>
+            </div>
+            <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-yellow-400 to-yellow-500 transition-all duration-500" [style.width.%]="taskStats.pendingPercent"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-slate-600 dark:text-slate-400">in progress</span>
+              <span class="text-slate-900 dark:text-white font-semibold">{{ taskStats.inProgressPercent | number:'1.0-0' }}%</span>
+            </div>
+            <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-blue-400 to-blue-500 transition-all duration-500" [style.width.%]="taskStats.inProgressPercent"></div>
+            </div>
+          </div>
+          <div>
+            <div class="flex justify-between text-sm mb-1">
+              <span class="text-slate-600 dark:text-slate-400">completed</span>
+              <span class="text-slate-900 dark:text-white font-semibold">{{ taskStats.completedPercent | number:'1.0-0' }}%</span>
+            </div>
+            <div class="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-green-400 to-green-500 transition-all duration-500" [style.width.%]="taskStats.completedPercent"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- toolbar -->
+      <div class="mb-6 card dark:bg-slate-800 dark:border-slate-700 p-4">
+        <div class="flex flex-col sm:flex-row gap-4">
+          <!-- search -->
+          <div class="flex-1 relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <input 
+              type="text"
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onFilterChange()"
+              placeholder="search tasks..."
+              class="input dark:bg-slate-700 dark:border-slate-600 dark:text-white pl-10"
+            />
+          </div>
+
+          <select 
+            [(ngModel)]="filterCategory"
+            (ngModelChange)="onFilterChange()"
+            class="input dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+          >
+            <option value="all">all categories</option>
+            <option value="Work">work</option>
+            <option value="Personal">personal</option>
+          </select>
+
+          <button 
+            (click)="openCreateModal()"
+            class="btn-primary whitespace-nowrap"
+            title="create task (Ctrl+K)"
+          >
+            <span class="flex items-center gap-2">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+              </svg>
+              new task
+            </span>
+          </button>
+        </div>
+
+        <!-- keyboard shortcuts hint -->
+        <div class="mt-3 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <span class="flex items-center gap-1">
+            <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">Ctrl</kbd>+<kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">K</kbd> new task
+          </span>
+          <span class="flex items-center gap-1">
+            <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">Ctrl</kbd>+<kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">/</kbd> toggle stats
+          </span>
+          <span class="flex items-center gap-1">
+            <kbd class="px-2 py-1 bg-slate-100 dark:bg-slate-700 rounded">Esc</kbd> close modal
+          </span>
+        </div>
+      </div>
+
+      <!-- loading state -->
+      <div *ngIf="loading && tasks.length === 0" class="text-center py-12">
+        <div class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <p class="mt-4 text-slate-600 dark:text-slate-400">loading tasks...</p>
+      </div>
+
+      <!-- kanban board with drag and drop -->
+      <div *ngIf="!loading || tasks.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- pending column -->
+        <div class="card dark:bg-slate-800 dark:border-slate-700 p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="w-3 h-3 bg-yellow-400 rounded-full"></span>
+              pending
+            </h2>
+            <span class="badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400">
+              {{ pendingTasks.length }}
+            </span>
+          </div>
+          <div 
+            cdkDropList
+            #pendingList="cdkDropList"
+            [cdkDropListData]="pendingTasks"
+            [cdkDropListConnectedTo]="[inProgressList, completedList]"
+            (cdkDropListDropped)="drop($event, 'pending')"
+            class="space-y-3 min-h-[200px]"
+          >
+            <div 
+              *ngFor="let task of pendingTasks"
+              cdkDrag
+              class="card dark:bg-slate-700 dark:border-slate-600 p-4 cursor-move hover:shadow-lg transition-all"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <span class="text-2xl">{{ getCategoryIcon(task.category || '') }}</span>
+                <div class="flex gap-1">
+                  <button 
+                    (click)="openEditModal(task)"
+                    class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-600 rounded transition-colors"
+                    title="edit"
+                  >
+                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button 
+                    (click)="deleteTask(task)"
+                    class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+                    title="delete"
+                  >
+                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <h3 class="font-semibold text-slate-900 dark:text-white mb-2">{{ task.title }}</h3>
+              <p *ngIf="task.description" class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">{{ task.description }}</p>
+              <div class="text-xs text-slate-500 dark:text-slate-500">
+                {{ task.user?.name || 'unknown' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- in progress column -->
+        <div class="card dark:bg-slate-800 dark:border-slate-700 p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="w-3 h-3 bg-blue-400 rounded-full"></span>
+              in progress
+            </h2>
+            <span class="badge bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+              {{ inProgressTasks.length }}
+            </span>
+          </div>
+          <div 
+            cdkDropList
+            #inProgressList="cdkDropList"
+            [cdkDropListData]="inProgressTasks"
+            [cdkDropListConnectedTo]="[pendingList, completedList]"
+            (cdkDropListDropped)="drop($event, 'in-progress')"
+            class="space-y-3 min-h-[200px]"
+          >
+            <div 
+              *ngFor="let task of inProgressTasks"
+              cdkDrag
+              class="card dark:bg-slate-700 dark:border-slate-600 p-4 cursor-move hover:shadow-lg transition-all"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <span class="text-2xl">{{ getCategoryIcon(task.category || '') }}</span>
+                <div class="flex gap-1">
+                  <button 
+                    (click)="openEditModal(task)"
+                    class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-600 rounded transition-colors"
+                    title="edit"
+                  >
+                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button 
+                    (click)="deleteTask(task)"
+                    class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+                    title="delete"
+                  >
+                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <h3 class="font-semibold text-slate-900 dark:text-white mb-2">{{ task.title }}</h3>
+              <p *ngIf="task.description" class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">{{ task.description }}</p>
+              <div class="text-xs text-slate-500 dark:text-slate-500">
+                {{ task.user?.name || 'unknown' }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card dark:bg-slate-800 dark:border-slate-700 p-4">
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span class="w-3 h-3 bg-green-400 rounded-full"></span>
+              completed
+            </h2>
+            <span class="badge bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
+              {{ completedTasks.length }}
+            </span>
+          </div>
+          <div 
+            cdkDropList
+            #completedList="cdkDropList"
+            [cdkDropListData]="completedTasks"
+            [cdkDropListConnectedTo]="[pendingList, inProgressList]"
+            (cdkDropListDropped)="drop($event, 'completed')"
+            class="space-y-3 min-h-[200px]"
+          >
+            <div 
+              *ngFor="let task of completedTasks"
+              cdkDrag
+              class="card dark:bg-slate-700 dark:border-slate-600 p-4 cursor-move hover:shadow-lg transition-all opacity-75"
+            >
+              <div class="flex items-start justify-between mb-2">
+                <span class="text-2xl">{{ getCategoryIcon(task.category || '') }}</span>
+                <div class="flex gap-1">
+                  <button 
+                    (click)="openEditModal(task)"
+                    class="p-1.5 hover:bg-slate-100 dark:hover:bg-slate-600 rounded transition-colors"
+                    title="edit"
+                  >
+                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                  </button>
+                  <button 
+                    (click)="deleteTask(task)"
+                    class="p-1.5 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+                    title="delete"
+                  >
+                    <svg class="w-4 h-4 text-slate-600 dark:text-slate-400 hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <h3 class="font-semibold text-slate-900 dark:text-white mb-2 line-through">{{ task.title }}</h3>
+              <p *ngIf="task.description" class="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">{{ task.description }}</p>
+              <div class="text-xs text-slate-500 dark:text-slate-500">
+                {{ task.user?.name || 'unknown' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- empty state -->
+      <div *ngIf="!loading && tasks.length === 0" class="text-center py-16 card dark:bg-slate-800 dark:border-slate-700">
+        <svg class="w-16 h-16 mx-auto text-slate-300 dark:text-slate-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        <p class="text-slate-600 dark:text-slate-400 text-lg mb-1">no tasks yet</p>
+        <p class="text-slate-500 dark:text-slate-500 text-sm mb-4">create your first task to get started</p>
+        <button (click)="openCreateModal()" class="btn-primary">
+          create task
+        </button>
+      </div>
+    </main>
+
+    <!-- modal -->
+    <div 
+      *ngIf="showModal"
+      class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn"
+      (click)="closeModal()"
+    >
+      <div 
+        class="card dark:bg-slate-800 dark:border-slate-700 w-full max-w-md animate-scaleIn"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="p-6">
+          <h2 class="text-xl font-bold text-slate-900 dark:text-white mb-4">
+            {{ modalMode === 'create' ? 'create new task' : 'edit task' }}
+          </h2>
+
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">title</label>
+              <input 
+                type="text"
+                [(ngModel)]="taskForm.title"
+                placeholder="task title"
+                class="input dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                autofocus
+              />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">description</label>
+              <textarea 
+                [(ngModel)]="taskForm.description"
+                placeholder="task description (optional)"
+                rows="3"
+                class="input dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+              ></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">status</label>
+                <select 
+                  [(ngModel)]="taskForm.status"
+                  class="input dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                >
+                  <option value="pending">pending</option>
+                  <option value="in-progress">in progress</option>
+                  <option value="completed">completed</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">category</label>
+                <select 
+                  [(ngModel)]="taskForm.category"
+                  class="input dark:bg-slate-700 dark:border-slate-600 dark:text-white"
+                >
+                  <option value="Work">work</option>
+                  <option value="Personal">personal</option>
+                </select>
+              </div>
+            </div>
+
+            <div *ngIf="error" class="text-red-600 dark:text-red-400 text-sm">{{ error }}</div>
+          </div>
+
+          <div class="flex gap-3 mt-6">
+            <button 
+              (click)="closeModal()"
+              class="btn-secondary flex-1"
+            >
+              cancel
+            </button>
+            <button 
+              (click)="saveTask()"
+              [disabled]="loading"
+              class="btn-primary flex-1"
+            >
+              {{ loading ? 'saving...' : 'save' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
