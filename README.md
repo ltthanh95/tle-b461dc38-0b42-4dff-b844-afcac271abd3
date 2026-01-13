@@ -97,6 +97,14 @@ nx test dashboard
 nx run-many --target=test --all
 ```
 
+### 6. Note
+After installed packages, if the application runs into error, please delete folder node_modules in api folder
+
+```bash
+# from root
+rm -rf api/node_modules api/package-lock.json api/bun.lockb
+rm -rf node_modules bun.lockb
+```
 ---
 
 ## 🏗️ Architecture Overview
@@ -706,12 +714,6 @@ nx serve dashboard
 ## 👥 Contributors
 
 - Thanh Le - Full Stack Developer
-
----
-
-## 📄 License
-
-MIT
 
 ---
 
